@@ -1,4 +1,5 @@
 const http = require("http");
+const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -21,6 +22,9 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
 const SMTP_USER = process.env.SMTP_USER || "";
 const SMTP_PASS = process.env.SMTP_PASS || "";
 const SMTP_FROM = process.env.SMTP_FROM || SMTP_USER || OWNER_EMAIL;
+const BREVO_API_KEY = process.env.BREVO_API_KEY || "";
+const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || SMTP_FROM || OWNER_EMAIL;
+const BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || "Aark Realty";
 const NOTIFY_EMAILS = Array.from(
   new Set(
     [OWNER_EMAIL, SMTP_FROM, process.env.NOTIFY_EMAILS || ""]
@@ -49,6 +53,8 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && pathname === "/api/health") {
       return sendJson(res, 200, {
         ok: true,
+        mailProvider: getMailProvider(),
+        brevoConfigured: Boolean(BREVO_API_KEY && BREVO_SENDER_EMAIL),
         smtpConfigured: Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS),
         ownerEmail: OWNER_EMAIL,
       });
@@ -104,7 +110,7 @@ async function handleSubmission(res, kind, payload) {
   let mailed = false;
   let mailWarning = "";
 
-  if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
+  if (isMailConfigured()) {
     try {
       await sendNotificationEmail(submission);
       mailed = true;
@@ -113,7 +119,7 @@ async function handleSubmission(res, kind, payload) {
       mailWarning = "Submission saved locally but email notification failed.";
     }
   } else {
-    mailWarning = "SMTP is not configured. Submission saved locally only.";
+    mailWarning = "Email is not configured. Submission saved locally only.";
   }
 
   sendJson(res, 200, { ok: true, mailed, warning: mailWarning });
@@ -322,11 +328,6 @@ async function sendNotificationEmail(submission) {
 
   for (const recipient of NOTIFY_EMAILS) {
     await sendEmail({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-      from: SMTP_FROM,
       to: recipient,
       subject: subjectMap[submission.kind] || "New website submission",
       text: bodyLines.join("\r\n"),
@@ -334,7 +335,102 @@ async function sendNotificationEmail(submission) {
   }
 }
 
-function sendEmail({ host, port, user, pass, from, to, subject, text }) {
+function isMailConfigured() {
+  return Boolean(BREVO_API_KEY && BREVO_SENDER_EMAIL) || Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS);
+}
+
+function getMailProvider() {
+  if (BREVO_API_KEY && BREVO_SENDER_EMAIL) {
+    return "brevo";
+  }
+
+  if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
+    return "smtp";
+  }
+
+  return "none";
+}
+
+function sendEmail({ to, subject, text }) {
+  if (BREVO_API_KEY && BREVO_SENDER_EMAIL) {
+    return sendBrevoEmail({
+      apiKey: BREVO_API_KEY,
+      fromEmail: BREVO_SENDER_EMAIL,
+      fromName: BREVO_SENDER_NAME,
+      to,
+      subject,
+      text,
+    });
+  }
+
+  if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
+    return sendSmtpEmail({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+      from: SMTP_FROM,
+      to,
+      subject,
+      text,
+    });
+  }
+
+  return Promise.reject(new Error("No email provider configured"));
+}
+
+function sendBrevoEmail({ apiKey, fromEmail, fromName, to, subject, text }) {
+  const payload = JSON.stringify({
+    sender: {
+      name: fromName,
+      email: fromEmail,
+    },
+    to: [{ email: to }],
+    subject,
+    textContent: text,
+  });
+
+  return new Promise((resolve, reject) => {
+    const request = https.request(
+      {
+        host: "api.brevo.com",
+        port: 443,
+        path: "/v3/smtp/email",
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+          "api-key": apiKey,
+          "content-length": Buffer.byteLength(payload, "utf8"),
+        },
+      },
+      (response) => {
+        let body = "";
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => {
+          body += chunk;
+        });
+        response.on("end", () => {
+          if (response.statusCode && response.statusCode >= 200 && response.statusCode < 300) {
+            resolve();
+            return;
+          }
+
+          reject(new Error(`Brevo API error (${response.statusCode || "unknown"}): ${body || "empty response"}`));
+        });
+      }
+    );
+
+    request.setTimeout(20000, () => {
+      request.destroy(new Error("Brevo API timeout"));
+    });
+    request.on("error", reject);
+    request.write(payload);
+    request.end();
+  });
+}
+
+function sendSmtpEmail({ host, port, user, pass, from, to, subject, text }) {
   return new Promise((resolve, reject) => {
     const socket = tls.connect(
       {

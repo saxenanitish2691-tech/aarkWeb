@@ -15,7 +15,7 @@ const BROCHURE_MANIFEST_FILE = path.join(BROCHURE_DIR, "manifest.json");
 
 loadEnv(path.join(ROOT_DIR, ".env"));
 
-const OWNER_EMAIL = process.env.OWNER_EMAIL || "saxena.nitish2691@gmail.com";
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "info@aarkrealty.com";
 const SMTP_HOST = process.env.SMTP_HOST || "";
 const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
 const SMTP_USER = process.env.SMTP_USER || "";

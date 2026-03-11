@@ -1,0 +1,16 @@
+{"kind":"contact","createdAt":"2026-03-11T04:22:43.176Z","name":"Sanskar","email":"saxena.sanskar92@gmail.com","phone":"7505305475","subject":"Commercial","message":"hiiii"}
+{"kind":"lead","createdAt":"2026-03-11T04:26:54.340Z","name":"Sanskar","email":"saxena.sanskar921@gmail.com","phone":"7505305475","message":"Hiii","lead_type":"popup_inquiry","source":"website_popup"}
+{"kind":"lead","createdAt":"2026-03-11T04:38:05.703Z","name":"Sanskar","email":"saxena.sanskar92@gmail.com","phone":"7505305475","message":"jnsfs","lead_type":"popup_inquiry","source":"website_popup"}
+{"kind":"contact","createdAt":"2026-03-11T04:41:10.388Z","name":"SMTP Test","email":"smtp-test@example.com","phone":"9999999999","subject":"SMTP verification","message":"Testing contact form email delivery."}
+{"kind":"contact","createdAt":"2026-03-11T04:42:42.265Z","name":"Sansakr","email":"saxena.sanskar92@gmail.com","phone":"7505305475","subject":"Commercial","message":"Hi"}
+{"kind":"contact","createdAt":"2026-03-11T04:43:51.322Z","name":"Mail Debug","email":"debug@example.com","phone":"9999999999","subject":"Mail debug","message":"Checking mail delivery path."}
+{"kind":"contact","createdAt":"2026-03-11T04:45:54.279Z","name":"Sender Test","email":"sender-test@example.com","phone":"9999999999","subject":"Sender verification","message":"Testing sender account update."}
+{"kind":"contact","createdAt":"2026-03-11T04:47:14.972Z","name":"Sansakr","email":"s@gmail.com","phone":"7505305475","subject":"Hi","message":"Hi"}
+{"kind":"contact","createdAt":"2026-03-11T04:49:34.541Z","name":"SMTP Real Test","email":"smtp-real-test@example.com","phone":"9999999999","subject":"SMTP real verification","message":"Testing corrected SMTP flow."}
+{"kind":"contact","createdAt":"2026-03-11T04:50:02.704Z","name":"SMTP Final Check","email":"smtp-final@example.com","phone":"9999999999","subject":"SMTP final check","message":"Final verification after SMTP parser fix."}
+{"kind":"contact","createdAt":"2026-03-11T04:51:52.808Z","name":"Dual Recipient Test","email":"dual-test@example.com","phone":"9999999999","subject":"Dual recipient verification","message":"Checking delivery to both inboxes."}
+{"kind":"contact","createdAt":"2026-03-11T04:52:19.732Z","name":"Dual Recipient Final","email":"dual-final@example.com","phone":"9999999999","subject":"Dual recipient final","message":"Final check for both recipient addresses."}
+{"kind":"contact","createdAt":"2026-03-11T04:54:03.918Z","name":"Sanskar","email":"saxena.sanskar921@gmail.com","phone":"+917505305475","subject":"Hi","message":"hi"}
+{"kind":"lead","createdAt":"2026-03-11T04:55:24.333Z","name":"sanskar","email":"saxena.sanskar92@gmail.com","phone":"+917505305475","property_id":"1","property_title":"DLF Camellias","lead_type":"brochure_download","message":"Brochure download request for DLF Camellias"}
+{"kind":"lead","createdAt":"2026-03-11T05:00:52.929Z","name":"Sanskar","email":"saxena.sanskar92@gmail.com","phone":"+917505305475","message":"Hi","lead_type":"popup_inquiry","source":"website_popup"}
+{"kind":"lead","createdAt":"2026-03-11T05:01:28.984Z","name":"Sanskar","email":"saxena.sanskar92@gmail.com","phone":"+917505305475","property_id":"5","property_title":"Migsun Alpha Central","lead_type":"brochure_download","message":"Brochure download request for Migsun Alpha Central"}
